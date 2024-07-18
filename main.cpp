@@ -1,71 +1,127 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <stack>
+#include <queue>
 #include <cctype>
-#include <float.h>
+#include <stdexcept>
 
-class TextEditor {
+class Calculator {
 public:
-    void text(std::string& expression) {
-        std::cout << "expression: ";
-        std::cin >> expression;
+    std::stack<double> values;
+    std::stack<char> operators;
+    std::stack<char> operators_old;
 
+    void processExpression(const std::string& expression) {
+        size_t idx = 0;
+        while (idx < expression.size()) {
+            char ch = expression[idx];
 
-        int i = 0;
-        Valid(expression, i);
-
-        if (i != 0) {
-            std::cout << "Invalid expression with error count: " << i << "\n";
-            return;
-        }
-
-        std::cout << "The expression is valid.\n";
-
-    }
-
-private:
-  void Valid(const std::string& expression, int& i) {
-
-        std::stack<char> brackets;
-
-
-        for (char ch : expression) {
-
-            if (!isdigit(ch)) {
-                if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-                    if (expression[ch-1] == (isdigit(ch)) ) {
-                        i++; }
+            if (std::isdigit(ch)) {
+                double number = ch - '0';
+                while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
+                    number = number * 10 + (expression[++idx] - '0');
                 }
 
+                if (operators.empty() && operators_old.empty()) {
+                    values.push(number);
+                } else if (!operators_old.empty()) {
+                    double num1 = values.top();
+                    values.pop();
+                    char op = operators_old.top();
+                    operators_old.pop();
+                    double result = performOperation(num1, number, op);
+                    values.push(result);
+                } else if (!operators.empty()) {
+                    values.push(number);
+                }
+
+                idx++;
+            } else if (ch == '+' || ch == '-') {
+                while (!operators_old.empty()) {
+                    executePendingOperation();
+                }
+                operators.push(ch);
+                idx++;
+            } else if (ch == '*' || ch == '/') {
+                operators_old.push(ch);
+                idx++;
+            } else {
+                std::cout << "no";
+                idx = expression.size();
 
 
             }
 
-
-
-             if (ch == '(') {
-                brackets.push(ch);
-             }
-
-            if (ch == ')') {
-                if (brackets.empty() )
-
-                    i++;
-
-                brackets.pop();
-             }
-
-
         }
 
-     }
+        while (!operators_old.empty()) {
+            executePendingOperation();
+        }
+
+        while (!operators.empty()) {
+            executePendingOperation();
+        }
+
+        if (!values.empty()) {
+            std::cout << "Result: " << values.top() << "\n";
+            values.pop();
+        }
+    }
+
+    double performOperation(double num1, double num2, char op) {
+        switch (op) {
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+            case '/':
+                return num1 / num2;
+            default:
+                throw std::invalid_argument("Unsupported operation");
+        }
+    }
+
+    void executePendingOperation() {
+        if (!operators_old.empty()) {
+            double num2 = values.top();
+            values.pop();
+            double num1 = values.top();
+            values.pop();
+            char op = operators_old.top();
+            operators_old.pop();
+            double result = performOperation(num1, num2, op);
+            values.push(result);
+        } else if (!operators.empty()) {
+            double num2 = values.top();
+            values.pop();
+            double num1 = values.top();
+            values.pop();
+            char op = operators.top();
+            operators.pop();
+            double result = performOperation(num1, num2, op);
+            values.push(result);
+        }
+    }
+};
+
+class TextEditor {
+public:
+    void text(std::string& expression, Calculator& calc) {
+        std::cout << "expression: ";
+        std::cin >> expression;
+
+        calc.processExpression(expression);
+    }
 };
 
 int main() {
     TextEditor editor;
+    Calculator calc;
     std::string operation;
-    editor.text(operation);
-
+    editor.text(operation, calc);
 
     return 0;
 }
