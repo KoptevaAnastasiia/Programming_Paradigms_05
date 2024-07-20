@@ -47,12 +47,9 @@ public:
                 operators_old.push(ch);
                 idx++;
             } else {
-                std::cout << "no";
+                std::cout << "Unsupported character in expression\n";
                 idx = expression.size();
-
-
             }
-
         }
 
         while (!operators_old.empty()) {
@@ -78,7 +75,9 @@ public:
             case '*':
                 return num1 * num2;
             case '/':
-                return num1 / num2;
+                if (num2 != 0) {
+                    return num1 / num2;
+                }
             default:
                 throw std::invalid_argument("Unsupported operation");
         }
@@ -107,13 +106,93 @@ public:
     }
 };
 
+class MinMax {
+public:
+    void theMin(double num1, double num2) {
+        double print = std::min(num1, num2);
+        std::cout << "min:" << print<< std::endl;;
+
+    }
+    void theMax(double num1, double num2) {
+        double print = std::max(num1, num2);
+        std::cout << "max:" << print<< std::endl;;
+
+    }
+};
+
 class TextEditor {
 public:
     void text(std::string& expression, Calculator& calc) {
-        std::cout << "expression: ";
-        std::cin >> expression;
 
-        calc.processExpression(expression);
+        std::cout << "expression: ";
+        std::getline(std::cin, expression);
+
+        MinMax minMax;
+        size_t idx = 0;
+
+        if (expression.compare(0, 3, "min") == 0) {
+
+            idx = 4;
+            double num1, num2 = 0;
+            bool foundComma = false;
+
+            while (idx < expression.size()) {
+
+                char ch = expression[idx];
+
+                if (std::isdigit(ch)) {
+
+                    double number = ch - '0';
+                    while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
+                        number = number * 10 + (expression[++idx] - '0');
+                    }
+
+                    if (!foundComma) {
+                        num1 = number;
+                    } else {
+                        num2 = number;
+                    }
+
+                } else if (ch == ',') {
+                    foundComma = true;
+                }
+
+                idx++;
+            }
+            minMax.theMin(num1, num2);
+
+
+        } else if (expression.compare(0, 3, "max") == 0) {
+            idx = 4;
+            double num1 = 0, num2 = 0;
+            bool foundComma = false;
+
+            while (idx < expression.size() && expression[idx] != ')') {
+                 char ch = expression[idx];
+
+                if (std::isdigit(ch)) {
+                    double number = ch - '0';
+                    while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
+                        number = number * 10 + (expression[++idx] - '0');
+                    }
+
+                    if (!foundComma) {
+                        num1 = number;
+                    } else {
+                        num2 = number;
+                    }
+                } else if (ch == ',') {
+                    foundComma = true;
+                }
+
+                idx++;
+            } minMax.theMax(num1, num2);
+
+        } else {
+            calc.processExpression(expression);
+        }
+
+
     }
 };
 
