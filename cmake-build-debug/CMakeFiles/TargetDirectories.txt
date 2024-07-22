@@ -1,3 +1,3 @@
-/home/anastasiia/CLionProjects/Programming_Paradigms_5/cmake-build-debug/CMakeFiles/task05.dir
-/home/anastasiia/CLionProjects/Programming_Paradigms_5/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/anastasiia/CLionProjects/Programming_Paradigms_5/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug/CMakeFiles/task05.dir
+/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -21,6 +21,11 @@
 		{
 			"isCMake" : true,
 			"isExternal" : true,
+			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/CMakeUnixFindMake.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
 			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake"
 		},
 		{
@@ -569,6 +574,21 @@
 		{
 			"isCMake" : true,
 			"isExternal" : true,
+			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/CMakeFindCodeBlocks.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/CMakeExtraGeneratorDetermineCompilerMacrosAndIncludeDirs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/ProcessorCount.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
 			"path" : "/snap/clion/284/bin/cmake/linux/x64/share/cmake-3.28/Modules/CMakeCInformation.cmake"
 		},
 		{
@@ -763,8 +783,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/home/anastasiia/CLionProjects/Programming_Paradigms_5/cmake-build-debug",
-		"source" : "/home/anastasiia/CLionProjects/Programming_Paradigms_5"
+		"build" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug",
+		"source" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005"
 	},
 	"version" : 
 	{
