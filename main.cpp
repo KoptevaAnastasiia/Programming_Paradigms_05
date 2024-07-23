@@ -22,38 +22,35 @@ public:
                 while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
                     number = number * 10 + (expression[++idx] - '0');
                 }
-
-                if (operators.empty() && operators_old.empty()) {
-                    values.push(number);
-                } else if (!operators_old.empty()) {
-                    double num1 = values.top();
-                    values.pop();
-                    char op = operators_old.top();
-                    operators_old.pop();
-                    double result = performOperation(num1, number, op);
-                    values.push(result);
-                } else if (!operators.empty()) {
-                    values.push(number);
-                }
-
+                values.push(number);
                 idx++;
-            } else if (ch == '+' || ch == '-') {
-                while (!operators_old.empty()) {
+            } else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                while (!operators.empty() && priority(operators.top()) >= priority(ch)) {
                     executePendingOperation();
                 }
+
                 operators.push(ch);
                 idx++;
-            } else if (ch == '*' || ch == '/') {
-                operators_old.push(ch);
+
+
+            } else if (ch == '(') {
+                operators.push(ch);
+                idx++;
+            } else if (ch == ')') {
+
+                while (!operators.empty() && operators.top() != '(') {
+                    executePendingOperation();
+                }
+
+                if (!operators.empty() && operators.top() == '(') {
+                    operators.pop();
+                }
+
                 idx++;
             } else {
                 std::cout << "Unsupported character in expression\n";
                 idx = expression.size();
             }
-        }
-
-        while (!operators_old.empty()) {
-            executePendingOperation();
         }
 
         while (!operators.empty()) {
@@ -84,25 +81,25 @@ public:
     }
 
     void executePendingOperation() {
-        if (!operators_old.empty()) {
-            double num2 = values.top();
-            values.pop();
-            double num1 = values.top();
-            values.pop();
-            char op = operators_old.top();
-            operators_old.pop();
-            double result = performOperation(num1, num2, op);
-            values.push(result);
-        } else if (!operators.empty()) {
-            double num2 = values.top();
-            values.pop();
-            double num1 = values.top();
-            values.pop();
+        if (!operators.empty()) {
+
             char op = operators.top();
             operators.pop();
+
+
+            double num2 = values.top();
+            values.pop();
+            double num1 = values.top();
+            values.pop();
             double result = performOperation(num1, num2, op);
             values.push(result);
         }
+    }
+
+    int priority(char op) {
+        if (op == '+' || op == '-') return 1;
+        if (op == '*' || op == '/') return 2;
+        return 0;
     }
 };
 

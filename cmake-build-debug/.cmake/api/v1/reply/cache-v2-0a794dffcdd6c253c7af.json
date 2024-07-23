@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug"
+			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_055/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -627,7 +627,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_055/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -687,7 +687,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005"
+			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_055"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1262,30 +1262,6 @@
 			"value" : "/usr/sbin/sysctl"
 		},
 		{
-			"name" : "Python3_EXECUTABLE",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
-				}
-			],
-			"type" : "UNINITIALIZED",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/venv/bin/python"
-		},
-		{
-			"name" : "Python_EXECUTABLE",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
-				}
-			],
-			"type" : "UNINITIALIZED",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/venv/bin/python"
-		},
-		{
 			"name" : "_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED",
 			"properties" : 
 			[
@@ -1307,7 +1283,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug"
+			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_055/cmake-build-debug"
 		},
 		{
 			"name" : "task05_IS_TOP_LEVEL",
@@ -1331,7 +1307,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_005"
+			"value" : "/home/anastasiia/CLionProjects/Programming_Paradigms_055"
 		}
 	],
 	"kind" : "cache",

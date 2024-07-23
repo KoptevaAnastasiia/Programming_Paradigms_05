@@ -1,4 +1,4 @@
-# Install script for directory: /home/anastasiia/CLionProjects/Programming_Paradigms_005
+# Install script for directory: /home/anastasiia/CLionProjects/Programming_Paradigms_055
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/anastasiia/CLionProjects/Programming_Paradigms_005/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/anastasiia/CLionProjects/Programming_Paradigms_055/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
