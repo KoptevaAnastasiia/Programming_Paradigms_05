@@ -1,203 +1,242 @@
-#include <algorithm>
 #include <iostream>
 #include <string>
-#include <stack>
-#include <queue>
-#include <cctype>
-#include <stdexcept>
+#include <fstream>
+#include <dlfcn.h>
+#include <cstring>
+#include <fcntl.h>
+#include <unistd.h>
 
-class Calculator {
+class Data {
+
 public:
-    std::stack<double> values;
-    std::stack<char> operators;
-    std::stack<char> operators_old;
+    size_t  Size = 256;
 
-    void processExpression(const std::string& expression) {
-        size_t idx = 0;
-        while (idx < expression.size()) {
-            char ch = expression[idx];
+    char* content = new char[Size];
 
-            if (std::isdigit(ch)) {
-                double number = ch - '0';
-                while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
-                    number = number * 10 + (expression[++idx] - '0');
-                }
-                values.push(number);
-                idx++;
-            } else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-                while (!operators.empty() && priority(operators.top()) >= priority(ch)) {
-                    executePendingOperation();
-                }
-
-                operators.push(ch);
-                idx++;
+    char* inputFile = new char[Size];
+    char* outputFile = new char[Size];
+    int shift;
 
 
-            } else if (ch == '(') {
-                operators.push(ch);
-                idx++;
-            } else if (ch == ')') {
 
-                while (!operators.empty() && operators.top() != '(') {
-                    executePendingOperation();
-                }
+    Data() {
+        inputFile[0] = '\0';
+        outputFile[0] = '\0';
 
-                if (!operators.empty() && operators.top() == '(') {
-                    operators.pop();
-                }
+        content[0] = '\0';
 
-                idx++;
-            } else {
-                std::cout << "Unsupported character in expression\n";
-                idx = expression.size();
+    }
+
+    ~Data() {
+        delete[] inputFile;
+        delete[] outputFile;
+        delete[] content;
+    }
+
+    bool Content(const char* inputFile) {
+        if (!loadTextFromFile(inputFile)) {
+            printf("error\n");
+            return false;
+        } else {
+            printf("good\n");
+        }
+        return true;
+    }
+
+
+    bool loadTextFromFile(const char* inputFile) {
+        std::ifstream inFile(inputFile);
+        if (!inFile) {
+            return false;
+        }
+
+        std::string line;
+        size_t currentLength = 0;
+
+        while (std::getline(inFile, line)) {
+            size_t lineLength = line.length() + 1; // +1 для \n
+            if (currentLength + lineLength >= Size) {
+                Size *= 2;
+                char* newContent = new char[Size];
+                std::memcpy(newContent, content, currentLength);
+                delete[] content;
+                content = newContent;
             }
+
+
+            std::strcpy(content + currentLength, line.c_str());
+            currentLength += lineLength;
+            content[currentLength - 1] = '\n';
         }
 
-        while (!operators.empty()) {
-            executePendingOperation();
-        }
-
-        if (!values.empty()) {
-            std::cout << "Result: " << values.top() << "\n";
-            values.pop();
-        }
+        inFile.close();
+        return true;
     }
 
-    double performOperation(double num1, double num2, char op) {
-        switch (op) {
-            case '+':
-                return num1 + num2;
-            case '-':
-                return num1 - num2;
-            case '*':
-                return num1 * num2;
-            case '/':
-                if (num2 != 0) {
-                    return num1 / num2;
-                }
-            default:
-                throw std::invalid_argument("Unsupported operation");
+    bool saveTextToFile(const char* filePath, const char* content) const {
+        int out_File = open(filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (out_File == -1) {
+            return false;
         }
-    }
 
-    void executePendingOperation() {
-        if (!operators.empty()) {
-
-            char op = operators.top();
-            operators.pop();
-
-
-            double num2 = values.top();
-            values.pop();
-            double num1 = values.top();
-            values.pop();
-            double result = performOperation(num1, num2, op);
-            values.push(result);
+        ssize_t bytesWritten = write(out_File, content, strlen(content));
+        if (bytesWritten == -1) {
+            close(out_File);
+            return false;
         }
+
+        if (close(out_File) == -1) {
+            return false;
+        }
+
+        return true;
     }
 
-    int priority(char op) {
-        if (op == '+' || op == '-') return 1;
-        if (op == '*' || op == '/') return 2;
-        return 0;
+
+
+
+
+    char* getContent() {
+        return content;
     }
+
+    void setContent(const char* newContent) {
+        size_t newContentLength = std::strlen(newContent);
+        if (newContentLength >= Size) {
+            delete[] content;
+            Size = newContentLength + 1;
+            content = new char[Size];
+        }
+        std::strcpy(content, newContent);
+    }
+    /////////
 };
 
-class MinMax {
+class CaesarCipher {
 public:
-    void theMin(double num1, double num2) {
-        double print = std::min(num1, num2);
-        std::cout << "min:" << print<< std::endl;;
+    bool Point(std::string& content, char operation, int shift) {
+        bool success;
 
+        if (operation == 'e' || operation == 'E') {
+            success = encrypt(content, shift);
+            if (success) {
+                std::cout << "Encrypted content: " << content << std::endl;
+            }
+        } else {
+            success = decrypt(content, shift);
+            if (success) {
+                std::cout << "Decrypted content: " << content << std::endl;
+            }
+        }
+        return success;
     }
-    void theMax(double num1, double num2) {
-        double print = std::max(num1, num2);
-        std::cout << "max:" << print<< std::endl;;
 
+    bool encrypt(std::string& content, int shift) {
+        void* handle = dlopen("./libcaesar_cipher.so", RTLD_LAZY);
+        if (!handle) {
+            fprintf(stderr, "Error: %s\n", dlerror());
+            return false;
+        }
+
+        void (*caesar_cipher)(char*, int);
+        caesar_cipher = (void(*)(char*, int))dlsym(handle, "caesar_cipher");
+        if (!caesar_cipher) {
+            fprintf(stderr, "Error: %s\n", dlerror());
+            dlclose(handle);
+            return false;
+        }
+
+        caesar_cipher(&content[0], shift);
+        dlclose(handle);
+        return true;
+    }
+
+    bool decrypt(std::string& content, int shift) {
+        void* handle = dlopen("./libcaesar_decrypt.so", RTLD_LAZY);
+        if (!handle) {
+            fprintf(stderr, "Error: %s\n", dlerror());
+            return false;
+        }
+
+        void (*caesar_cipher_decryption)(char*, int);
+        caesar_cipher_decryption = (void(*)(char*, int))dlsym(handle, "caesar_cipher_decryption");
+        if (!caesar_cipher_decryption) {
+            fprintf(stderr, "Error: %s\n", dlerror());
+            dlclose(handle);
+            return false;
+        }
+
+        caesar_cipher_decryption(&content[0], shift);
+        dlclose(handle);
+        return true;
     }
 };
 
 class TextEditor {
 public:
-    void text(std::string& expression, Calculator& calc) {
+    void text(char* operation, char* inputFile, char* outputFile, int& shift) {
+        std::cout << "e/d: ";
+        std::cin >> operation;
 
-        std::cout << "expression: ";
-        std::getline(std::cin, expression);
-
-        MinMax minMax;
-        size_t idx = 0;
-
-        if (expression.compare(0, 3, "min") == 0) {
-
-            idx = 4;
-            double num1, num2 = 0;
-            bool foundComma = false;
-
-            while (idx < expression.size()) {
-
-                char ch = expression[idx];
-
-                if (std::isdigit(ch)) {
-
-                    double number = ch - '0';
-                    while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
-                        number = number * 10 + (expression[++idx] - '0');
-                    }
-
-                    if (!foundComma) {
-                        num1 = number;
-                    } else {
-                        num2 = number;
-                    }
-
-                } else if (ch == ',') {
-                    foundComma = true;
-                }
-
-                idx++;
-            }
-            minMax.theMin(num1, num2);
-
-
-        } else if (expression.compare(0, 3, "max") == 0) {
-            idx = 4;
-            double num1 = 0, num2 = 0;
-            bool foundComma = false;
-
-            while (idx < expression.size() && expression[idx] != ')') {
-                 char ch = expression[idx];
-
-                if (std::isdigit(ch)) {
-                    double number = ch - '0';
-                    while (idx + 1 < expression.size() && std::isdigit(expression[idx + 1])) {
-                        number = number * 10 + (expression[++idx] - '0');
-                    }
-
-                    if (!foundComma) {
-                        num1 = number;
-                    } else {
-                        num2 = number;
-                    }
-                } else if (ch == ',') {
-                    foundComma = true;
-                }
-
-                idx++;
-            } minMax.theMax(num1, num2);
-
-        } else {
-            calc.processExpression(expression);
+        if (strcmp(operation, "E") != 0 && strcmp(operation, "D") != 0 && strcmp(operation, "e") != 0 && strcmp(operation, "d") != 0) {
+            printf("no\n");
+            return;
         }
 
+        std::cout << "path to file: ";
+        std::cin >> inputFile;
 
+        std::cout << "path to output file: ";
+        std::cin >> outputFile;
+
+        std::cout << "shift: ";
+        std::cin >> shift;
     }
 };
 
 int main() {
+    Data data;
     TextEditor editor;
-    Calculator calc;
-    std::string operation;
-    editor.text(operation, calc);
 
+    int Size_operation = 10;
+    char *operation = new char[Size_operation];
+
+    editor.text(operation, data.inputFile, data.outputFile, data.shift);
+
+    if (!data.Content(data.inputFile)) {
+        std::cerr << "Failed to load content from file" << std::endl;
+        delete[] operation;
+        return 1;
+    }
+
+    CaesarCipher cipher;
+    std::string contentStr = data.getContent();
+    if (!cipher.Point(contentStr, operation[0], data.shift)) {
+        std::cerr << "Failed to process content" << std::endl;
+        delete[] operation;
+        return 1;
+    }
+
+    data.setContent(contentStr.c_str());
+
+    if (!data.saveTextToFile(data.outputFile, data.content)) {
+        std::cerr << "Failed to save content to file" << std::endl;
+        delete[] operation;
+        return 1;
+    }
+
+    delete[] operation;
     return 0;
 }
+
+
+
+// /home/anastasiia/Documents/abc1256.txt
+
+
+
+
+
+
+
+
